@@ -1,5 +1,7 @@
+from typing import Type
+
 from django.db.models import QuerySet
-from rest_framework import viewsets
+from rest_framework import viewsets, serializers
 
 from cinema.models import Actor, Movie, CinemaHall, Genre, MovieSession
 from cinema.serializers import (
@@ -24,7 +26,7 @@ class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects
     serializer_class = MovieSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[serializers.BaseSerializer]:
         if self.action == "list":
             return MovieListSerializer
         elif self.action == "retrieve":
@@ -32,10 +34,9 @@ class MovieViewSet(viewsets.ModelViewSet):
         return MovieSerializer
 
     def get_queryset(self) -> QuerySet[Movie]:
-        queryset = self.queryset.get_queryset()
         if self.action in ("list", "retrieve"):
-            return queryset.prefetch_related("actors", "genres")
-        return queryset
+            return self.queryset.prefetch_related("actors", "genres")
+        return self.queryset
 
 
 class CinemaHallViewSet(viewsets.ModelViewSet):
@@ -52,7 +53,7 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
     queryset = MovieSession.objects
     serializer_class = MovieSessionSerializer
 
-    def get_serializer_class(self):
+    def get_serializer_class(self) -> Type[serializers.BaseSerializer]:
         if self.action == "list":
             return MovieSessionListSerializer
         elif self.action == "retrieve":
@@ -60,10 +61,9 @@ class MovieSessionViewSet(viewsets.ModelViewSet):
         return MovieSessionSerializer
 
     def get_queryset(self) -> QuerySet[MovieSession]:
-        queryset = self.queryset.get_queryset()
         if self.action == "list":
-            return queryset.select_related("movie", "cinema_hall")
+            return self.queryset.select_related("movie", "cinema_hall")
         elif self.action == "retrieve":
-            return (queryset.select_related("movie", "cinema_hall")
+            return (self.queryset.select_related("movie", "cinema_hall")
                     .prefetch_related("movie__actors", "movie__genres"))
-        return queryset
+        return self.queryset

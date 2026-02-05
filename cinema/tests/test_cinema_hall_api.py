@@ -32,6 +32,7 @@ class CinemaHallApiTests(TestCase):
         self.assertEqual(response.data[0]["name"], blue_hall["name"])
         self.assertEqual(response.data[0]["rows"], blue_hall["rows"])
         self.assertEqual(response.data[0]["seats_in_row"], blue_hall["seats_in_row"])
+        self.assertEqual(response.data[0]["capacity"], blue_hall["capacity"])
         vip_hall = {
             "name": "VIP",
             "rows": 6,
@@ -42,6 +43,7 @@ class CinemaHallApiTests(TestCase):
         self.assertEqual(response.data[1]["name"], vip_hall["name"])
         self.assertEqual(response.data[1]["rows"], vip_hall["rows"])
         self.assertEqual(response.data[1]["seats_in_row"], vip_hall["seats_in_row"])
+        self.assertEqual(response.data[1]["capacity"], vip_hall["capacity"])
 
     def test_post_cinema_halls(self):
         response = self.client.post(
